@@ -1,3 +1,16 @@
+// android/build.gradle.kts
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath("com.google.gms:google-services:4.3.15") // Correct Kotlin DSL for build gradle kts
+    }
+}
+
 allprojects {
     repositories {
         google()

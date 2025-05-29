@@ -1,5 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:usesCleartextTraffic="true"
+        android:launchMode="singleTop"
         android:label="video_call_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -16,6 +24,8 @@
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
+            
+
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -30,6 +40,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
+        <service android:name="com.hiennv.flutter_callkit_incoming.CallkitNotificationService"
+             android:exported="true"
+             android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
