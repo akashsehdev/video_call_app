@@ -1,18 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:video_call_app/screens/call_screen.dart';
+import 'package:video_call_app/utils/constants.dart';
 
 class IncomingCallScreen extends StatelessWidget {
   final String callerId;
   final String channelId;
   final String agoraToken;
   final bool isVideoCall;
+  final String receiverId;
 
   IncomingCallScreen({
     required this.callerId,
     required this.channelId,
     required this.agoraToken,
     required this.isVideoCall,
+    required this.receiverId,
   });
 
   @override
@@ -31,14 +33,17 @@ class IncomingCallScreen extends StatelessWidget {
                     builder:
                         (_) => CallScreen(
                           channelId: channelId,
-                          userId: FirebaseAuth.instance.currentUser!.uid,
+                          userId:
+                              receiverId, // Use callerId as userId or pass actual receiverId
                           token: agoraToken,
+                          isCaller: false,
                         ),
                   ),
                 );
               },
               child: Text('Accept'),
             ),
+
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);

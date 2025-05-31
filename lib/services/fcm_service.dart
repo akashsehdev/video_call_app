@@ -98,7 +98,9 @@ import 'dart:convert';
 import 'dart:io'; // For Platform check
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:video_call_app/screens/incoming_call_screen.dart';
 
 class FCMService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -116,11 +118,29 @@ class FCMService {
         'deviceToken': token,
       });
     }
+    final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received a message while in foreground: ${message.messageId}');
-      // Add your foreground message handling here
-    });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   if (message.data['type'] == 'call') {
+    //     final callerId = message.data['callerId'] ?? '';
+    //     final channelName = message.data['channelName'] ?? '';
+    //     final agoraToken = message.data['agoraToken'] ?? '';
+    //     final isVideoCall = message.data['isVideoCall'] == 'true';
+
+    //     // Assuming you have a global navigator key
+    //     // navigatorKey.currentState?.push(
+    //     //   MaterialPageRoute(
+    //     //     builder:
+    //     //         (_) => IncomingCallScreen(
+    //     //           callerId: callerId,
+    //     //           channelId: channelName,
+    //     //           agoraToken: agoraToken,
+    //     //           isVideoCall: isVideoCall,
+    //     //         ),
+    //     //   ),
+    //     // );
+    //   }
+    // });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Message clicked!: ${message.messageId}');
@@ -134,7 +154,7 @@ class FCMService {
   static Uri getBackendUrl() {
     if (Platform.isAndroid) {
       // Android emulator special localhost alias
-      return Uri.parse('http://10.0.2.2:3000/send-notification');
+      return Uri.parse('http://192.168.1.45:3000/send-notification');
     } else {
       // For iOS simulator or physical devices (adjust your PC IP accordingly)
       return Uri.parse('http://192.168.1.45:3000/send-notification');

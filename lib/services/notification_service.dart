@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/android_params.dart';
@@ -97,8 +98,34 @@ class NotificationService {
   static Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message,
   ) async {
-    debugPrint('Handling background message: ${message.messageId}');
-    // You can perform background processing here if needed
+    await Firebase.initializeApp();
+    debugPrint('🔄 Background FCM: ${message.messageId}');
+    final data = message.data;
+    if (data.containsKey('channelId')) {
+      await FlutterCallkitIncoming.showCallkitIncoming(
+        CallKitParams(
+          id: data['channelId'],
+          nameCaller: data['callerName'] ?? 'Unknown',
+          appName: 'Video Call App',
+          handle: 'Incoming Call',
+          avatar: 'https://i.pravatar.cc/100',
+          type: data['isVideoCall'] == 'true' ? 1 : 0,
+          duration: 30000,
+          extra: {
+            'callerId': data['callerId'],
+            'channelName': data['channelName'],
+            'isVideoCall': data['isVideoCall'],
+          },
+          android: AndroidParams(
+            isCustomNotification: true,
+            isShowLogo: true,
+            ringtonePath: 'system_ringtone_default',
+            backgroundColor: '#0955fa',
+          ),
+          ios: IOSParams(iconName: 'CallKitIcon'),
+        ),
+      );
+    }
   }
 
   /// Process notification data payload
@@ -121,30 +148,32 @@ class NotificationService {
   /// Sends a call notification to a specific device token using FCM HTTP API
   Future<void> sendCallNotification({
     required String token,
+    required String title,
+    required String body,
     required String callerId,
-    required String channelId,
+    required String channelName,
+    required bool isVideoCall,
   }) async {
-    const String serverKey = 'YOUR_SERVER_KEY_FROM_FIREBASE_PROJECT_SETTINGS';
-
-    final Map<String, dynamic> message = {
-      'to': token,
-      'data': {'type': 'call', 'callerId': callerId, 'channelId': channelId},
-      'priority': 'high',
-    };
+    const String serverUrl =
+        'http://localhost:3000/send-notification'; // Replace with deployed URL
 
     final response = await http.post(
-      Uri.parse('https://fcm.googleapis.com/fcm/send'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'key=$serverKey',
-      },
-      body: jsonEncode(message),
+      Uri.parse(serverUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'token': token,
+        'title': title,
+        'body': body,
+        'callerId': callerId,
+        'channelName': channelName,
+        'isVideoCall': isVideoCall,
+      }),
     );
 
     if (response.statusCode == 200) {
-      debugPrint('✅ Push notification sent successfully');
+      debugPrint('✅ Call notification sent via server.');
     } else {
-      debugPrint('❌ Failed to send notification: ${response.body}');
+      debugPrint('❌ Failed to send call notification: ${response.body}');
     }
   }
 }
