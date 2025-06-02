@@ -24,7 +24,6 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   late final RtcEngine _engine;
   final List<int> _remoteUsers = [];
-  final Set<int> _activeVideoUsers = {};
   bool _muted = false;
   bool _isInitialized = false;
   bool _speakerOn = true;

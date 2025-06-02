@@ -26,8 +26,6 @@ class FCMService {
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'deviceToken': token,
     });
-  
-    
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Message clicked!: ${message.messageId}');
