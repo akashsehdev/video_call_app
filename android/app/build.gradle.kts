@@ -13,6 +13,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
         isCoreLibraryDesugaringEnabled = true
+
     }
 
     kotlinOptions {
@@ -22,7 +23,7 @@ android {
     defaultConfig {
         applicationId = "com.example.video_call_app"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 33
         multiDexEnabled = true
         versionCode = flutter.versionCode
         versionName = flutter.versionName

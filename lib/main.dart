@@ -1,177 +1,16 @@
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/material.dart';
-// import 'package:video_call_app/screens/home_screen.dart';
-// import 'package:video_call_app/screens/incoming_call_screen.dart';
-// import 'package:video_call_app/services/notification_service.dart';
-// import 'package:video_call_app/services/call_service.dart';
-
-// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print('Handling a background message: ${message.messageId}');
-//   // You can save call data here or trigger a local notification.
-//   // But no UI interaction can be done here directly.
-// }
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-
-//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-//   await NotificationService().initialize();
-//   await CallService().initialize();
-
-//   // Set up Firebase Messaging handlers
-//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//     print('Foreground message received: ${message.messageId}');
-//     if (message.data['type'] == 'call') {
-//       _showIncomingCallScreen(message.data);
-//     }
-//   });
-
-//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//     print('Notification clicked: ${message.messageId}');
-//     if (message.data['type'] == 'call') {
-//       _showIncomingCallScreen(message.data);
-//     }
-//   });
-
-//   // Check if app was opened from a terminated state via notification tap
-//   FirebaseMessaging.instance.getInitialMessage().then((message) {
-//     if (message != null && message.data['type'] == 'call') {
-//       _showIncomingCallScreen(message.data);
-//     }
-//   });
-
-//   runApp(MyApp());
-// }
-
-// void _showIncomingCallScreen(Map<String, dynamic> data) {
-//   navigatorKey.currentState?.push(
-//     MaterialPageRoute(
-//       builder:
-//           (_) => IncomingCallScreen(
-//             callerId: data['callerId'],
-//             channelId: data['channelName'],
-//             agoraToken: data['agoraToken'],
-//             isVideoCall: data['isVideoCall'] == 'true',
-//           ),
-//     ),
-//   );
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       navigatorKey: navigatorKey,
-//       title: 'Video Call App',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(primarySwatch: Colors.indigo),
-//       home: const HomeScreen(),
-//     );
-//   }
-// }
-
-//2nd testing
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-// import 'package:flutter/material.dart';
-// import 'package:video_call_app/screens/home_screen.dart';
-// import 'package:video_call_app/screens/incoming_call_screen.dart';
-// import 'package:video_call_app/services/notification_service.dart';
-// import 'package:video_call_app/services/call_service.dart';
-
-// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   await Firebase.initializeApp();
-//   print('Handling a background message: ${message.messageId}');
-//   // Handle background logic here if needed (no UI)
-// }
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-
-//   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-//   await NotificationService().initialize(); // Initialize local notifications
-//   await CallService().initialize();
-
-//   // Set up foreground message handler with local notification display
-//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//     print('Foreground message received: ${message.messageId}');
-
-//     // Show local notification (delegated to NotificationService)
-//     // NotificationService().showNotification(message);
-
-//     // Handle call notification specially
-//     if (message.data['type'] == 'call') {
-//       _showIncomingCallScreen(message.data);
-//     }
-//   });
-
-//   // Handle user tapping on a notification (app in background or terminated)
-//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//     print('Notification clicked: ${message.messageId}');
-//     if (message.data['type'] == 'call') {
-//       _showIncomingCallScreen(message.data);
-//     }
-//   });
-
-//   // Handle app opened from terminated state by tapping notification
-//   final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-//   if (initialMessage != null && initialMessage.data['type'] == 'call') {
-//     _showIncomingCallScreen(initialMessage.data);
-//   }
-
-//   runApp(const MyApp());
-// }
-
-// void _showIncomingCallScreen(Map<String, dynamic> data) {
-//   navigatorKey.currentState?.push(
-//     MaterialPageRoute(
-//       builder:
-//           (_) => IncomingCallScreen(
-//             callerId: data['callerId'],
-//             channelId: data['channelName'],
-//             agoraToken: data['agoraToken'],
-//             isVideoCall: data['isVideoCall'] == 'true',
-//           ),
-//     ),
-//   );
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       navigatorKey: navigatorKey,
-//       title: 'Video Call App',
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData(primarySwatch: Colors.indigo),
-//       home: const HomeScreen(),
-//     );
-//   }
-// }
-
-//3rd testing
+//3rd testing working properly
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/entities/android_params.dart';
+import 'package:flutter_callkit_incoming/entities/call_event.dart';
+import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
+import 'package:flutter_callkit_incoming/entities/ios_params.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_call_app/screens/home_screen.dart';
 import 'package:video_call_app/screens/incoming_call_screen.dart';
 import 'package:video_call_app/services/agora_service.dart';
-import 'package:video_call_app/services/notification_service.dart';
-import 'package:video_call_app/services/call_service.dart';
 import 'package:video_call_app/utils/constants.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -179,120 +18,142 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('📦 Background message: ${message.messageId}');
-  // You can process background logic here (like storing to local DB)
+  // Background message processing (e.g., save call data locally)
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  // Register background message handler
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  await NotificationService().initialize();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('userId');
+  // Listen to FlutterCallkitIncoming events (accept, decline, etc)
+  FlutterCallkitIncoming.onEvent.listen(_handleCallKitEvent);
 
-  if (userId != null) {
-    await CallService().initialize(userId);
-  }
+  // Listen for foreground messages with type 'call'
+  FirebaseMessaging.onMessage.listen((message) {
+    if (message.data['type'] == 'call') {
+      _showIncomingCall(message.data);
+    }
+  });
 
-  debugPrint('User ID: ${userId}');
-
-  // Run app first
-  runApp(const MyApp());
-
-  // Now safe to use navigatorKey
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  // Listen when app is opened from notification tap
+  FirebaseMessaging.onMessageOpenedApp.listen((message) {
     if (message.data['type'] == 'call') {
       _showIncomingCallScreen(message.data);
     }
   });
 
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.data['type'] == 'call') {
-      _showIncomingCallScreen(message.data);
-    }
-  });
-
+  // Handle app launch via notification tap
   final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null && initialMessage.data['type'] == 'call') {
     _showIncomingCallScreen(initialMessage.data);
   }
+
+  runApp(const MyApp());
 }
 
-// void _showIncomingCallScreen(Map<String, dynamic> data) async {
-//   WidgetsBinding.instance.addPostFrameCallback((_) async {
-//     try {
-//       final callerId = data['callerId'] ?? 'Unknown';
-//       final channelId = data['channelName'] ?? 'default_channel';
-//       final agoraToken = Constants.agoraToken;
-//       final isVideoCall =
-//           (data['isVideoCall']?.toString() ?? 'false') == 'true';
+void _handleCallKitEvent(CallEvent? event) async {
+  if (event == null) return;
 
-//       print('📞 Incoming call from: $callerId');
+  print("📞 CallKit event: ${event.event}");
+  switch (event.event) {
+    case Event.actionCallAccept:
+      final extraRaw = event.body['extra'];
+      if (extraRaw is Map) {
+        final data = Map<String, dynamic>.from(extraRaw);
+        _showIncomingCallScreen(data);
+      }
+      break;
 
-//       // ✅ Fetch receiverId from SharedPreferences
-//       final prefs = await SharedPreferences.getInstance();
-//       final receiverId = prefs.getString('userId') ?? 'Unknown';
+    case Event.actionCallDecline:
+    case Event.actionCallEnded:
+    case Event.actionCallTimeout:
+      // Optionally handle decline, end, timeout events here
+      break;
 
-//       if (agoraToken != null) {
-//         navigatorKey.currentState?.push(
-//           MaterialPageRoute(
-//             builder:
-//                 (_) => IncomingCallScreen(
-//                   receiverId: receiverId,
-//                   callerId: callerId,
-//                   channelId: channelId,
-//                   agoraToken: agoraToken,
-//                   isVideoCall: isVideoCall,
-//                 ),
-//           ),
-//         );
-//       } else {
-//         print('Agora token is null. Cannot start call.');
-//       }
-//     } catch (e, stackTrace) {
-//       print(' Error showing incoming call screen: $e');
-//       print(stackTrace);
-//     }
-//   });
-// }
-void _showIncomingCallScreen(Map<String, dynamic> data) async {
+    default:
+      break;
+  }
+}
+
+Future<void> _showIncomingCall(Map<String, dynamic> data) async {
+  // final prefs = await SharedPreferences.getInstance();
+  // final receiverId = prefs.getString('userId') ?? 'Unknown';
+
+  final params = CallKitParams(
+    id: data['channelId'] ?? '',
+    nameCaller: data['callerId'] ?? 'Unknown Caller',
+    appName: 'Video Call App',
+    avatar: 'https://i.pravatar.cc/100',
+    handle: 'Incoming Call',
+    type: (data['isVideoCall']?.toString() == 'true') ? 1 : 0,
+    duration: 30000,
+    textAccept: 'Accept',
+    textDecline: 'Decline',
+    extra: {
+      'callerId': data['callerId'],
+      'agoraToken': data['agoraToken'],
+      'channelName': data['channelName'],
+      'isVideoCall': data['isVideoCall'],
+    },
+    android: AndroidParams(
+      isCustomNotification: true,
+      isShowLogo: true,
+      isShowCallID: true,
+      ringtonePath: 'system_ringtone_default',
+      backgroundColor: '#0955fa',
+      backgroundUrl: 'system_background_default',
+    ),
+    ios: IOSParams(iconName: 'CallKitIcon', handleType: 'generic'),
+  );
+
+  await FlutterCallkitIncoming.showCallkitIncoming(params);
+}
+
+void _showIncomingCallScreen(Map<String, dynamic> data) {
   WidgetsBinding.instance.addPostFrameCallback((_) async {
     try {
       final callerId = data['callerId'] ?? 'Unknown';
       final channelId = data['channelName'] ?? 'default_channel';
-      // final agoraToken = Constants.agoraToken;
-      
-
-      final isVideoCall =
-          (data['isVideoCall']?.toString() ?? 'false') == 'true';
-
-      print('📞 Incoming call from: $callerId');
+      final isVideoCall = (data['isVideoCall']?.toString() == 'true');
 
       final prefs = await SharedPreferences.getInstance();
       final receiverId = prefs.getString('userId') ?? 'Unknown';
 
       final tokenService = AgoraTokenService(backendUrl: Constants.backendUrl);
-final agoraToken = await tokenService.fetchToken(channelId, receiverId);
+      final agoraToken = await tokenService.fetchToken(channelId, receiverId);
 
       if (agoraToken == null) {
         print('Error: Agora token is null. Cannot show incoming call screen.');
         return;
       }
 
-      navigatorKey.currentState?.push(
-        MaterialPageRoute(
-          builder:
-              (_) => IncomingCallScreen(
-                receiverId: receiverId,
-                callerId: callerId,
-                channelId: channelId,
-                agoraToken: agoraToken,
-                isVideoCall: isVideoCall,
-              ),
-        ),
-      );
+      // Prevent pushing duplicate IncomingCallScreen if already on it
+      bool isCurrentIncomingCallScreen = false;
+      navigatorKey.currentState?.popUntil((route) {
+        if (route.settings.name == IncomingCallScreen.routeName) {
+          isCurrentIncomingCallScreen = true;
+        }
+        return true;
+      });
+
+      if (!isCurrentIncomingCallScreen) {
+        navigatorKey.currentState?.push(
+          MaterialPageRoute(
+            builder:
+                (_) => IncomingCallScreen(
+                  receiverId: receiverId,
+                  callerId: callerId,
+                  channelId: channelId,
+                  agoraToken: agoraToken,
+                  isVideoCall: isVideoCall,
+                ),
+            settings: RouteSettings(name: IncomingCallScreen.routeName),
+          ),
+        );
+      }
     } catch (e, stackTrace) {
       print('Error showing incoming call screen: $e');
       print(stackTrace);

@@ -121,6 +121,21 @@ class _CallScreenState extends State<CallScreen> {
     _engine.switchCamera();
   }
 
+  void _onEndCall() {
+    Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _leaveAndReleaseEngine();
+    super.dispose();
+  }
+
+  void _leaveAndReleaseEngine() async {
+    await _engine.leaveChannel();
+    await _engine.release();
+  }
+
   void _onToggleSpeaker() {
     setState(() {
       _speakerOn = !_speakerOn;
@@ -137,21 +152,6 @@ class _CallScreenState extends State<CallScreen> {
     } else {
       _engine.enableLocalVideo(false);
     }
-  }
-
-  void _onEndCall() {
-    Navigator.pop(context);
-  }
-
-  @override
-  void dispose() {
-    _leaveAndReleaseEngine();
-    super.dispose();
-  }
-
-  void _leaveAndReleaseEngine() async {
-    await _engine.leaveChannel();
-    await _engine.release();
   }
 
   @override

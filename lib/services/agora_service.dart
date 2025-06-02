@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_call_app/services/call_log_service.dart';
 import 'package:video_call_app/services/fcm_service.dart';
 import 'package:video_call_app/utils/constants.dart';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
@@ -11,16 +12,22 @@ class AgoraTokenService {
 
   AgoraTokenService({required this.backendUrl});
 
+  
   Future<String?> fetchToken(String channelName, String userAccount) async {
     final url = Uri.parse(
       '$backendUrl/token?channelName=$channelName&userAccount=$userAccount',
     );
 
     try {
+      print('Fetching token from URL: $url');
       final response = await http.get(url);
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        print('Token fetched: ${data['token']}');
         return data['token'] as String?;
       } else {
         print(
@@ -91,6 +98,23 @@ class AgoraService {
     required String receiverId,
     bool isVideoCall = true,
   }) async {
+    final channelId = 'channel_${DateTime.now().millisecondsSinceEpoch}';
+
+    // Log the call (move this here)
+    // await CallLogService.logCall("outgoing", channelId);
+
+    // Inside initiateCall() just before/after initiating the Agora call
+    await CallLogService.logCall(
+      callerId: callerId,
+      receiverId: receiverId,
+      isVideoCall: isVideoCall,
+      timestamp: DateTime.now(),
+    );
+
+    // TODO: Add your Agora SDK call initiation code here
+
+    print('Agora call initiated from $callerId to $receiverId on $channelId');
+
     print('Starting call from $callerId to $receiverId');
 
     // Step 1: Check permissions

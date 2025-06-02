@@ -1,30 +1,29 @@
-// import 'dart:convert';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-// class CallLogService {
-//   static const _key = 'call_logs';
+class CallLogService {
+  static final _firestore = FirebaseFirestore.instance;
 
-//   static Future<void> logCall(String type, String channelId) async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final logs = prefs.getStringList(_key) ?? [];
-//     logs.add(
-//       jsonEncode({
-//         'timestamp': DateTime.now().toIso8601String(),
-//         'type': type,
-//         'channelId': channelId,
-//       }),
-//     );
-//     await prefs.setStringList(_key, logs);
-//   }
+  static Future<void> logCall({
+    required String callerId,
+    required String receiverId,
+    required bool isVideoCall,
+    required DateTime timestamp,
+  }) async {
+    await _firestore.collection('call_logs').add({
+      'callerId': callerId,
+      'receiverId': receiverId,
+      'isVideoCall': isVideoCall,
+      'timestamp': timestamp,
+    });
+  }
 
-//   static Future<List<Map<String, dynamic>>> getLogs() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final logs = prefs.getStringList(_key) ?? [];
-//     return logs.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
-//   }
+  static Future<List<Map<String, dynamic>>> getLogs() async {
+    final snapshot =
+        await _firestore
+            .collection('call_logs')
+            .orderBy('timestamp', descending: true)
+            .get();
 
-//   static Future<void> clearLogs() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.remove(_key);
-//   }
-// }
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+}
